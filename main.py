@@ -126,3 +126,5 @@ def  bin_freqs(filename, nbins=256, nchannels=8):
     #get the indexes of the nodes that have been clustered
     node_idx = get_node_idx(clustered_set, nbins, nchannels)
     #use the node indexes to get the indexes of all of the leafs
+
+
