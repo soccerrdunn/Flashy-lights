@@ -13,6 +13,7 @@ import configparser
 from scipy.spatial.distance import squareform
 import sklearn.cluster as clstr
 
+example_filename = '/home/rick/Downloads/j-bells-jazz.mp3'
 
 #usage example: myfile= cp['DEFAULT']['songpath']+cp['DEFAULT']['songlist'].split('\n')[1]
 
@@ -95,7 +96,7 @@ def get_node_leafs(cluster, num_leafs, nodes):
         leafs[i]=leaf_list
 
 
-def  bin_freqs(filename, nbins=256, nchannels=8):
+def  simple_flash_thresh(filename, nbins=256, nchannels=8):
     #filename is self explanatory, nbins tells you how many bins to break the spectrograph
     #frequencies to, and nchannels tells you how many channels to ultimately have at the end
     #open the file to read the music information, load into music with sample rate sr
@@ -123,8 +124,39 @@ def  bin_freqs(filename, nbins=256, nchannels=8):
     #bins.
     clustered_set=clstr.AgglomerativeClustering(n_clusters=nchannels, metric='precomputed', linkage='single').fit(1-mean_corr_data)
 
-    #get the indexes of the nodes that have been clustered
-    node_idx = get_node_idx(clustered_set, nbins, nchannels)
-    #use the node indexes to get the indexes of all of the leafs
+    #now re-bin everything into SG_Nu, which is the re-binned schema created from the 
+    #bin labels calculated in the clustering algorithm, average them out
+    SG_Nu=np.zeros((nchannels,SG.shape[1]))
+    for i in range(0, nchannels-1):
+        x=0
+        for j in range (0, nbins-1):
+            if clustered_set.labels_[j] == i:
+                SG_Nu[i]=SG_Nu[i]+SG[j]
+                x=x+1
+        SG_Nu[i]=SG_Nu[i]/x
+        
+    #now create your threshold value, simple methos is to just calculate the average
+    #so that half the time each channel is on and half the time its off (simple)
+    thresh=np.mean(SG_Nu,1)
 
-
+    #next find the threshold values, timestamps and determine which channels should be 
+    #"on" = 1, or "off" = 0
+    sync_info = np.zeros((nchannels+1,SG_Nu.shape[1]))
+    #consider re-writing this using the np.where function
+    for i in range(1,SG_Nu.shape[1]-1):
+        #calculate the threshold and convert to integer to make life easier
+        #later
+        y = (np.greater(SG_Nu[:,i],thresh)).astype(int)
+        #if the result is the same, we aren't going to do anythign and skip
+        #writing into the sync info matrix, the key will be the timestamps
+        #of 0 except the first will be removed at the end and only times 
+        #where somethign occurs will there be data available to act on
+        if np.any(y!=(sync_info[1:,i-1])):
+            sync_info[0,i] = lb.samples_to_time(i,sr=sr)
+            sync_info[1:,i]=y
+    
+    #remove the instances where nothing happens (the time stamp was left at zero above
+    np.delete(sync_info , np.where(sync_info[0] == 0), axis=1)
+    
+    #now write to a csv
+    np.savetxt((filename+'.csv'), SG_Nu, delimeter=',')
