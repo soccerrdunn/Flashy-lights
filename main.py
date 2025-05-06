@@ -3,7 +3,7 @@
 #
 #Insert credits here
 #
-#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
+#
 #This project is designed to generate flashing lights to music.
 
 import librosa as lb
