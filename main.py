@@ -3,7 +3,7 @@
 #
 #Insert credits here
 #
-#
+#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
 #This project is designed to generate flashing lights to music.
 
 import librosa as lb
@@ -12,6 +12,8 @@ import pandas as pd
 import configparser
 from scipy.spatial.distance import squareform
 import sklearn.cluster as clstr
+import matplotlib.pyplot as plt
+import csv
 
 example_filename = '/home/rick/Downloads/j-bells-jazz.mp3'
 
@@ -160,3 +162,33 @@ def  simple_flash_thresh(filename, nbins=256, nchannels=8):
     
     #now write to a csv
     np.savetxt((filename+'.csv'), SG_Nu, delimeter=',')
+
+
+def test_timing(filename)
+    #This takes the filename file and creates a flashing light display 
+    #currently using 8 channels (future work will add additional flashing
+    #areas
+    shapes = list()
+    fig,ax = plt.subplots()
+    shapes.insert(0,Rectangle((0.2,0.6),width=0.6,height=0.05,edgecolor='blue',facecolor='lightblue'))
+    shapes.insert(1,Polygon([(0.0,0.2),(0.2,0.2),(0.1,0.7)],edgecolor='green',facecolor='lightgreen'))
+    shapes.insert(2,Rectangle((0.2,0.2),width=.05,height=0.2,edgecolor='red',facecolor='red'))
+    shapes.insert(3,Rectangle((0.7,0.2),width=.05,height=0.2,edgecolor='red',facecolor='red'))
+    shapes.insert(4,Polygon([(0.5,0.5),(0.7,0.5),(0.6,0.3)],edgecolor='green',facecolor='lightgreen'))
+    shapes.insert(5,Rectangle((0.3,0.2),width=.15,height=0.15,edgecolor='red',facecolor='red'))
+    shapes.insert(6,Circle((0.6,0.3), radius=0.05,edgecolor='blue',facecolor='lightblue'))
+    shapes.insert(7,Circle((0.8,0.3), radius=0.05,edgecolor='blue',facecolor='lightblue'))
+
+    for i in range(0, len(shapes)):
+        ax.add_patch(shapes[i])
+    ax.set_xlim(0,1)
+    ax.set_ylim(0,1)
+    ax.set_aspect('equal')
+    plt.grid(True)
+    plt.title('test')
+    plt.show(block=False)
+
+>>> rect.set_visible(False)
+>>> plt.show(block=False)
+>>> rect.set_visible(True)
+>>> plt.show(block=False)
