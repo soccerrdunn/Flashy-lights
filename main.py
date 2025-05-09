@@ -13,6 +13,8 @@ import configparser
 from scipy.spatial.distance import squareform
 import sklearn.cluster as clstr
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, Circle, Polygon
+from matplotlib.artist import Artist
 import csv
 
 example_filename = '/home/rick/Downloads/j-bells-jazz.mp3'
@@ -157,14 +159,14 @@ def  simple_flash_thresh(filename, nbins=256, nchannels=8):
             sync_info[0,i] = lb.samples_to_time(i,sr=sr)
             sync_info[1:,i]=y
     
-    #remove the instances where nothing happens (the time stamp was left at zero above
+    #remove the instances where nothing happens (i.e. where the time stamp was left at zero above)
     np.delete(sync_info , np.where(sync_info[0] == 0), axis=1)
     
     #now write to a csv
-    np.savetxt((filename+'.csv'), SG_Nu, delimeter=',')
+    np.savetxt((filename+'.csv'), sync_info, delimiter=',')
 
 
-def test_timing(filename)
+def test_timing(filename):
     #This takes the filename file and creates a flashing light display 
     #currently using 8 channels (future work will add additional flashing
     #areas
@@ -179,8 +181,10 @@ def test_timing(filename)
     shapes.insert(6,Circle((0.6,0.3), radius=0.05,edgecolor='blue',facecolor='lightblue'))
     shapes.insert(7,Circle((0.8,0.3), radius=0.05,edgecolor='blue',facecolor='lightblue'))
 
+
     for i in range(0, len(shapes)):
-        ax.add_patch(shapes[i])
+        ax.add_patch(shapes[i]) #Use Artist.remove() to remove artist from patches if there are reuse errors
+    
     ax.set_xlim(0,1)
     ax.set_ylim(0,1)
     ax.set_aspect('equal')
@@ -188,7 +192,9 @@ def test_timing(filename)
     plt.title('test')
     plt.show(block=False)
 
->>> rect.set_visible(False)
->>> plt.show(block=False)
->>> rect.set_visible(True)
->>> plt.show(block=False)
+
+
+# >>> rect.set_visible(False)
+# >>> plt.show(block=False)
+# >>> rect.set_visible(True)
+# >>> plt.show(block=False)
