@@ -2,7 +2,7 @@
 #Author: Richard Dunn
 #
 #Insert credits here
-# I'm testing GITHUB desktop
+# 
 # 
 #This project is designed to generate flashing lights to music.
 
